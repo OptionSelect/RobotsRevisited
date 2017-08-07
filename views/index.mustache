@@ -6,18 +6,18 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-<div class="container">
-  <h2>User Directory</h2>
-<ul>
-  {{#users}}
-    <li>
-      <img src="{{avatar}}">
-      <a href="/user/{{name}}"><h3>{{name}}</h3></a>
-      {{#job}}<p>{{job}}, {{company}} </p>{{/job}}
-      {{^job}}<p class = "nojob">Available for hire</p> {{/job}}
-    </li>
-  {{/users}}
-</ul>
-</div>
+    <div class="container">
+      <h2>User Directory</h2>
+      <ul>
+      {{#robots}}
+        <li>
+          <img src="{{imageurl}}">
+          <a href="/robots/{{id}}"><h3>{{username}}</h3></a>
+          {{#job}}<p>{{job}}, {{company}} </p>{{/job}}
+          {{^job}}<p class = "nojob">Available for hire</p> {{/job}}
+        </li>
+    {{/robots}}
+    </ul>
+    </div>
   </body>
 </html>

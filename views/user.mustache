@@ -8,14 +8,10 @@
   <body>
     <div class="usercontainer">
       <div class="picture">
-      <img src="{{avatar}}" class = "userimg">
+      <img src="{{imageurl}}" class = "userimg">
       </div>
-        <h3 class = "username">{{name}}</h3>
-        {{#address.city}}<span>{{address.city}}, </span>{{/address.city}}
-        {{^address.city}}<span></span>{{/address.city}}
-
-        {{#address.country}}<span>{{address.country}} | </span>{{/address.country}}
-        {{^address.country}}<span></span>{{/address.country}}
+        <h3 class = "username">{{username}}</h3>
+        {{#address}}<span>{{address}}, </span>{{/address}}
 
         {{#job}}<span> {{job}}, {{company}}</span>{{/job}}
         {{^job}}<span class="nojob">Available for hire</span>{{/job}}
@@ -24,12 +20,6 @@
 
         {{#university}}<p class = "userschool"><strong>Education:</strong> {{university}}</p>{{/university}}
         {{^university}}<p class = "userschool"></p>{{/university}}
-
-        <span class = "skillspan"><strong>Skills:</strong></span>
-
-        <ul style = "list-style: none" class = "skillscol">
-          {{#skills}}<li class = "userskills">{{.}}</li>{{/skills}}
-        </ul>
     </div>
   </body>
 </html>
