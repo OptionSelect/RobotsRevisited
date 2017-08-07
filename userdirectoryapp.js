@@ -39,10 +39,33 @@ app.get('/', (req, res) => {
 
 app.get('/robots/:id', (req, res) => {
   const idFromParamsFromURL = parseInt(req.params.id)
-  db.one('SELECT * FROM "robots" WHERE id = $(id)', { id: idFromParamsFromURL }).then(data => {
-    res.render('user', data)
-  })
+  db
+    .one('SELECT * FROM "robots" WHERE id = $(id)', { id: idFromParamsFromURL })
+    .then(data => {
+      res.render('user', data)
+    })
+    .catch(error => {
+      res.render('newbot')
+    })
 })
+
+app.post('/', (req, res) => {
+  const username = req.body.username
+  const address = req.body.address
+  const job = req.body.job
+  const company = req.body.company
+  const email = req.body.email
+  const phone = req.body.phone
+  const education = req.body.education
+
+  db.one('INSERT INTO "robots" (username, address, job, company, email, phone, education) VALUES($username, $address, $job, $company, $email, $phone, $education)')
+    .then(data => {
+        console.log(data.id); // print new user id;
+    })
+    .catch(error => {
+        console.log('ERROR:', error); // print error;
+    });
+}
 
 app.listen(3000, function() {
   console.log('Listening ft. Andre 3000')
