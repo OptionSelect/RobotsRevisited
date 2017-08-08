@@ -1,11 +1,13 @@
 const express = require('express')
 const app = express()
 const mustacheExpress = require('mustache-express')
-// const data = require('./data.js')
+const bodyParser = require('body-parser')
 const pgPromise = require('pg-promise')()
 const db = pgPromise({ database: 'robots' })
 
 app.use(express.static('public'))
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 app.engine('mustache', mustacheExpress())
 app.set('views', './views')
 app.set('view engine', 'mustache')
@@ -26,7 +28,7 @@ ALTER TABLE robots ADD COLUMN “company” VARCHAR(100) NULL
 ALTER TABLE robots ADD COLUMN “postal_code” VARCHAR(15) NULL
 ALTER TABLE robots ADD COLUMN “year_built” INTEGER(4) NULL
 ALTER TABLE robots ADD COLUMN “next_service_date” INTEGER(100) NULL
-ALTER TABLE robots ADD COLUMN “is_active” VARCHAR(100) NOT NULL
+ALTER TABLE robots ADD COLUMN “is_active” VARCHAR(100) NULL
 
 */
 
@@ -49,23 +51,27 @@ app.get('/robots/:id', (req, res) => {
     })
 })
 
-app.post('/', (req, res) => {
-  const username = req.body.username
-  const address = req.body.address
-  const job = req.body.job
-  const company = req.body.company
-  const email = req.body.email
-  const phone = req.body.phone
-  const education = req.body.education
+app.post('/adduser/:id', (req, res) => {
+  const newuser = {
+    username: req.body.username,
+    address: req.body.address,
+    job: req.body.job,
+    company: req.body.company,
+    email: req.body.email,
+    university: req.body.university
+  }
 
-  db.one('INSERT INTO "robots" (username, address, job, company, email, phone, education) VALUES($username, $address, $job, $company, $email, $phone, $education)')
-    .then(data => {
-        console.log(data.id); // print new user id;
+  db
+    .one(
+      `INSERT INTO "robots" ("username", "address", "job", "company", "email", "university") VALUES($(username), $(address), $(job), $(company), $(email), $(university))
+      RETURNING id`,
+      newuser
+    )
+    .then(newuser => {
+      console.log(newuser)
+      res.redirect('/')
     })
-    .catch(error => {
-        console.log('ERROR:', error); // print error;
-    });
-}
+})
 
 app.listen(3000, function() {
   console.log('Listening ft. Andre 3000')
