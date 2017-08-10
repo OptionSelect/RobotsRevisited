@@ -20,7 +20,12 @@
 
         {{#university}}<p class = "userschool"><strong>Education:</strong> {{university}}</p>{{/university}}
         {{^university}}<p class = "userschool"></p>{{/university}}
-
+        <p>
+          Would you like to DELETE this user?
+          <button type="button" id = "deletebutton" data-id = "{{id}}" name="submitbutton">DELETE</button>
+        </p>
     </div>
+    <script src="/main.js" charset="utf-8"></script>
+    </form>
   </body>
 </html>

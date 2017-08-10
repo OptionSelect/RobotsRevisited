@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const expressValidator = require('express-validator')
 const mustacheExpress = require('mustache-express')
 const bodyParser = require('body-parser')
 const pgPromise = require('pg-promise')()
@@ -34,7 +35,6 @@ ALTER TABLE robots ADD COLUMN “is_active” VARCHAR(100) NULL
 
 app.get('/', (req, res) => {
   db.any('SELECT * FROM "robots"').then(data => {
-    console.log(data)
     res.render('index', { robots: data })
   })
 })
@@ -68,9 +68,16 @@ app.post('/adduser/:id', (req, res) => {
       newuser
     )
     .then(newuser => {
-      console.log(newuser)
       res.redirect('/')
     })
+})
+
+app.delete('/robots/:id', (req, res) => {
+  const robotId = parseInt(req.params.id)
+  db.result('DELETE FROM "robots" WHERE id = $(id)', { id: robotId }).then(data => {
+    console.log('GOT EM: ' + data)
+  })
+  res.redirect('/')
 })
 
 app.listen(3000, function() {
