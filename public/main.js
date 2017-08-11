@@ -6,3 +6,4 @@ document.querySelector('#deletebutton').addEventListener('click', function() {
     console.log(json)
   })
 })
+window.location('/')

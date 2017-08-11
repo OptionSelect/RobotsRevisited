@@ -18,6 +18,9 @@
         <p><input type="text" name="university" value="" placeholder="Education"></p>
         <button type="submit" name="button">Submit</button>
       </form>
+      {{#errors}}
+        {{msg}}
+      {{/errors}}
     </div>
   </body>
 </html>

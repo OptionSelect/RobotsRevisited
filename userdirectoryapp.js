@@ -9,6 +9,7 @@ const db = pgPromise({ database: 'robots' })
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.use(expressValidator())
 app.engine('mustache', mustacheExpress())
 app.set('views', './views')
 app.set('view engine', 'mustache')
@@ -52,24 +53,50 @@ app.get('/robots/:id', (req, res) => {
 })
 
 app.post('/adduser/:id', (req, res) => {
-  const newuser = {
-    username: req.body.username,
-    address: req.body.address,
-    job: req.body.job,
-    company: req.body.company,
-    email: req.body.email,
-    university: req.body.university
-  }
+  req.checkBody('username', 'Username cannot be blank').notEmpty()
+  req.checkBody('email', 'Email cannot be blank').notEmpty().isEmail()
+  req.checkBody('street_number', 'Street number cannot be blank and must be numeric').notEmpty().isNumeric()
+  req.checkBody('address', 'Address cannot be blank').notEmpty()
+  req.checkBody('city', 'City cannot be blank').notEmpty()
+  req.checkBody('state', 'State cannot be blank').notEmpty()
+  req.checkBody('postal_code', 'Postal code cannot be blank and must be numeric').notEmpty().isNumeric()
+  req.checkBody('year_built', 'Year built cannot be blank and must be numeric').notEmpty().isNumeric()
+  req.checkBody('next_service_date', 'Next service date cannot be blank').notEmpty()
+  req.checkBody('is_active', 'Is active cannot be blank')
 
-  db
-    .one(
-      `INSERT INTO "robots" ("username", "address", "job", "company", "email", "university") VALUES($(username), $(address), $(job), $(company), $(email), $(university))
-      RETURNING id`,
-      newuser
-    )
-    .then(newuser => {
-      res.redirect('/')
-    })
+  var errors = req.validationErrors()
+  if (errors) {
+    res.render('newbot', { errors })
+  } else {
+    const newUser = {
+      userName: req.body.username,
+      imageUrl: req.body.imageurl || null,
+      email: req.body.email,
+      university: req.body.university || null,
+      streetNumber: req.body.street_number,
+      address: req.body.address,
+      city: req.body.city,
+      state: req.body.state,
+      job: req.body.job || null,
+      company: req.body.company || null,
+      postalCode: req.body.postal_code,
+      yearBuilt: req.body.year_built,
+      nextServiceDate: req.body.next_service_date,
+      isActive: req.body.is_active
+    }
+
+    db
+      .one(
+        `INSERT INTO "robots" ("username", "imageurl", "email", "university", "street_number", "address", "city", "state", "job", "company", "postal_code", "year_built", "next_service_date", "is_active") VALUES ($(userName), $(imageUrl), $(email), $(university), $(streetNumber), $(address), $(city), $(state), $(job), $(company), $(postalCode), $(yearBuilt), $(nextServiceDate), $(isActive)) RETURNING id`,
+        newUser
+      )
+      .then(newUser => {
+        res.redirect('/')
+      })
+      .catch(error => {
+        console.log('Something went wrong.')
+      })
+  }
 })
 
 app.delete('/robots/:id', (req, res) => {
@@ -77,7 +104,6 @@ app.delete('/robots/:id', (req, res) => {
   db.result('DELETE FROM "robots" WHERE id = $(id)', { id: robotId }).then(data => {
     console.log('GOT EM: ' + data)
   })
-  res.redirect('/')
 })
 
 app.listen(3000, function() {
